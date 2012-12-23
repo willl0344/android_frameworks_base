@@ -1,6 +1,7 @@
 package com.android.systemui.quicksettings;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -9,6 +10,13 @@ import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.QuickSettingsController;
 
 public class PreferencesTile extends QuickSettingsTile{
+    public static QuickSettingsTile mInstance;
+
+    public static QuickSettingsTile getInstance(Context context, LayoutInflater inflater,
+            QuickSettingsContainerView container, final QuickSettingsController qsc, Handler handler) {
+        if (mInstance == null) mInstance = new PreferencesTile(context, inflater, container, qsc);
+        return mInstance;
+    }
 
     public PreferencesTile(Context context, LayoutInflater inflater,
             QuickSettingsContainerView container, QuickSettingsController qsc) {

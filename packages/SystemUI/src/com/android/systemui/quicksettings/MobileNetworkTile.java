@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -24,6 +25,13 @@ public class MobileNetworkTile extends QuickSettingsTile implements NetworkSigna
     private String dataContentDescription;
     private String signalContentDescription;
     private boolean wifiOn = false;
+    public static QuickSettingsTile mInstance;
+
+    public static QuickSettingsTile getInstance(Context context, LayoutInflater inflater,
+            QuickSettingsContainerView container, final QuickSettingsController qsc, Handler handler) {
+        if (mInstance == null) mInstance = new MobileNetworkTile(context, inflater, container, qsc);
+        return mInstance;
+    }
 
     private ConnectivityManager mCm;
 

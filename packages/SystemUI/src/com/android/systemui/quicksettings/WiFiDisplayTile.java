@@ -1,11 +1,10 @@
 package com.android.systemui.quicksettings;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.WifiDisplayStatus;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,6 +17,13 @@ public class WiFiDisplayTile extends QuickSettingsTile{
 
     private boolean enabled = false;
     private boolean connected = false;
+    public static QuickSettingsTile mInstance;
+
+    public static QuickSettingsTile getInstance(Context context, LayoutInflater inflater,
+            QuickSettingsContainerView container, final QuickSettingsController qsc, Handler handler) {
+        if (mInstance == null) mInstance = new WiFiDisplayTile(context, inflater, container, qsc);
+        return mInstance;
+    }
 
     public WiFiDisplayTile(Context context, LayoutInflater inflater,
             QuickSettingsContainerView container,

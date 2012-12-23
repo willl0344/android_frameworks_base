@@ -64,6 +64,7 @@ import com.android.systemui.quicksettings.WiFiDisplayTile;
 import com.android.systemui.quicksettings.WiFiTile;
 import com.android.systemui.quicksettings.WifiAPTile;
 import com.android.systemui.quicksettings.RebootTile;
+import com.android.systemui.quicksettings.FavoriteContactTile; 
 import com.android.systemui.statusbar.powerwidget.PowerButton; 
 import com.android.systemui.quicksettings.VolumeTile;
 
@@ -101,6 +102,7 @@ public class QuickSettingsController {
     public static final String TILE_AUTOROTATE = "toggleAutoRotate";
     public static final String TILE_AIRPLANE = "toggleAirplane";
     public static final String TILE_TORCH = "toggleFlashlight";  // Keep old string for compatibility
+    public static final String TILE_FAVCONTACT = "toggleFavoriteContact"; 
     public static final String TILE_SLEEP = "toggleSleepMode";
     public static final String TILE_LTE = "toggleLte";
     public static final String TILE_WIMAX = "toggleWimax";
@@ -168,6 +170,7 @@ public class QuickSettingsController {
     public static final int DAYDREAM_TILE = 25;
     public static final int QUIET_HOURS_TILE = 26;
     public static final int REBOOT_TILE = 27; 
+    public static final int FAV_CONTACT_TILE = 28; 
     public static final int USER_TILE = 99;
     private InputMethodTile IMETile;
 
@@ -273,6 +276,8 @@ public class QuickSettingsController {
                 mQuickSettings.add(QUIET_HOURS_TILE);
 	    } else if (tile.equals(TILE_REBOOT)) {
                 mQuickSettings.add(REBOOT_TILE); 
+	    } else if (tile.equals(TILE_FAVCONTACT)) {
+                mQuickSettings.add(FAV_CONTACT_TILE); 
             }
         }
 
@@ -402,7 +407,7 @@ public class QuickSettingsController {
     void addQuickSettings(LayoutInflater inflater){
         // Load the user configured tiles
         loadTiles();
-
+	FavoriteContactTile.instanceCount = 0;
         // Now add the actual tiles from the loaded list
         for (Integer entry: mQuickSettings) {
             QuickSettingsTile qs = null;
@@ -465,6 +470,9 @@ public class QuickSettingsController {
             case TORCH_TILE:
                 qs = new TorchTile(mContext, inflater, mContainerView, this, mHandler);
                 break;
+	    case FAV_CONTACT_TILE:
+                qs = new FavoriteContactTile(mContext, inflater, mContainerView, this);
+		break;
             case WIFIAP_TILE:
                 qs = new WifiAPTile(mContext, inflater, mContainerView, this);
                 break;

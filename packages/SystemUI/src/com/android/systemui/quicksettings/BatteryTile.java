@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,6 +24,13 @@ public class BatteryTile extends QuickSettingsTile implements BatteryStateChange
 
     private LevelListDrawable batteryLevels;
     private LevelListDrawable chargingBatteryLevels;
+    public static QuickSettingsTile mInstance;
+
+    public static QuickSettingsTile getInstance(Context context, LayoutInflater inflater,
+            QuickSettingsContainerView container, final QuickSettingsController qsc, Handler handler) {
+        if (mInstance == null) mInstance = new BatteryTile(context, inflater, container, qsc);
+        return mInstance;
+    }
 
     public BatteryTile(Context context, LayoutInflater inflater,
             QuickSettingsContainerView container, QuickSettingsController qsc) {
