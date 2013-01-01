@@ -65,6 +65,7 @@ import com.android.systemui.quicksettings.WiFiTile;
 import com.android.systemui.quicksettings.WifiAPTile;
 import com.android.systemui.quicksettings.RebootTile;
 import com.android.systemui.quicksettings.FavoriteContactTile; 
+import com.android.systemui.quicksettings.FChargeTile;
 import com.android.systemui.statusbar.powerwidget.PowerButton; 
 import com.android.systemui.quicksettings.VolumeTile;
 
@@ -113,6 +114,7 @@ public class QuickSettingsController {
     public static final String TILE_DAYDREAM = "toggleDaydream";
     public static final String TILE_QUIETHOURS = "toggleQuietHours";
     public static final String TILE_REBOOT = "toggleReboot";
+    public static final String TILE_FCHARGE = "toggleFCharge";
 
     private static final String TILE_DELIMITER = "|";
     private static ArrayList<String> TILES_DEFAULT = new ArrayList<String>();
@@ -171,6 +173,7 @@ public class QuickSettingsController {
     public static final int QUIET_HOURS_TILE = 26;
     public static final int REBOOT_TILE = 27; 
     public static final int FAV_CONTACT_TILE = 28; 
+    public static final int FCHARGE_TILE = 29; 
     public static final int USER_TILE = 99;
     private InputMethodTile IMETile;
 
@@ -278,6 +281,8 @@ public class QuickSettingsController {
                 mQuickSettings.add(REBOOT_TILE); 
 	    } else if (tile.equals(TILE_FAVCONTACT)) {
                 mQuickSettings.add(FAV_CONTACT_TILE); 
+	    } else if (tile.equals(TILE_FCHARGE)) {
+                mQuickSettings.add(FCHARGE_TILE); 
             }
         }
 
@@ -504,6 +509,9 @@ public class QuickSettingsController {
                 qs = new RebootTile(mContext, inflater,
                         (QuickSettingsContainerView) mContainerView, this);
                 break; 
+            case FCHARGE_TILE:
+                qs = new FChargeTile(mContext, inflater, mContainerView, this);
+                break;
             }
             if (qs != null) {
                 qs.setupQuickSettingsTile();
