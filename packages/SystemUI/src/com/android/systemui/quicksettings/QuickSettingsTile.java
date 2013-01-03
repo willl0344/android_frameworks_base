@@ -36,6 +36,7 @@ public class QuickSettingsTile implements OnClickListener {
     protected QuickSettingsController mQsc;
     protected int mTileTextSize;
     protected int mTileTextColor;
+    protected String tileID = "0";
 
     public QuickSettingsTile(Context context, LayoutInflater inflater, QuickSettingsContainerView container, QuickSettingsController qsc) {
         mContext = context;
