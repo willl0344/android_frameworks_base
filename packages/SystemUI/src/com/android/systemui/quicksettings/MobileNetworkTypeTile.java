@@ -47,7 +47,8 @@ public class MobileNetworkTypeTile extends QuickSettingsTile implements NetworkS
 
     public static QuickSettingsTile getInstance(Context context, LayoutInflater inflater,
             QuickSettingsContainerView container, final QuickSettingsController qsc, Handler handler, String id) {
-        if (mInstance == null) mInstance = new MobileNetworkTypeTile(context, inflater, container, qsc);
+        mInstance = null;
+        mInstance = new MobileNetworkTypeTile(context, inflater, container, qsc);
         return mInstance;
     }
 
