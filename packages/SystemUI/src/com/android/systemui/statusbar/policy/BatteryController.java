@@ -28,10 +28,8 @@ import android.database.ContentObserver;
 import android.os.BatteryManager;
 import android.os.Handler;
 import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Slog;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,7 +44,6 @@ public class BatteryController extends BroadcastReceiver {
 
     private static final int BATTERY_STYLE_NORMAL         = 0;
     private static final int BATTERY_STYLE_PERCENT        = 1;
-    private static final int BATTERY_STYLE_ICON_PERCENT   = 2;
     /***
      * BATTERY_STYLE_CIRCLE* cannot be handled in this controller, since we cannot get views from
      * statusbar here. Yet it is listed for completion and not to confuse at future updates
@@ -54,11 +51,10 @@ public class BatteryController extends BroadcastReceiver {
      *
      * set to public to be reused by CircleBattery
      */
-    public  static final int BATTERY_STYLE_CIRCLE                = 3;
-    public  static final int BATTERY_STYLE_CIRCLE_PERCENT        = 4;
-    public  static final int BATTERY_STYLE_DOTTED_CIRCLE         = 5;
-    public  static final int BATTERY_STYLE_DOTTED_CIRCLE_PERCENT = 6;
-    private static final int BATTERY_STYLE_GONE                  = 7;
+    public  static final int BATTERY_STYLE_CIRCLE                = 2;
+    public  static final int BATTERY_STYLE_CIRCLE_PERCENT        = 3;
+    public  static final int BATTERY_STYLE_DOTTED_CIRCLE_PERCENT = 4;
+    private static final int BATTERY_STYLE_GONE                  = 5;
 
     private static final int BATTERY_ICON_STYLE_NORMAL      = R.drawable.stat_sys_battery;
     private static final int BATTERY_ICON_STYLE_CHARGE      = R.drawable.stat_sys_battery_charge;
@@ -69,8 +65,6 @@ public class BatteryController extends BroadcastReceiver {
     private static final int BATTERY_TEXT_STYLE_MIN     = R.string.status_bar_settings_battery_meter_min_format;
 
     private boolean mBatteryPlugged = false;
-    private int mLevel = 0;
-    private int mTextColor = 0;
     private int mBatteryStyle;
     private int mBatteryIcon = BATTERY_ICON_STYLE_NORMAL;
 
@@ -85,8 +79,6 @@ public class BatteryController extends BroadcastReceiver {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_BATTERY_TEXT_COLOR), false, this);
         }
 
         @Override public void onChange(boolean selfChange) {
@@ -130,29 +122,24 @@ public class BatteryController extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         final String action = intent.getAction();
         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-            mLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+            final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
             mBatteryPlugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
             int N = mIconViews.size();
             for (int i=0; i<N; i++) {
                 ImageView v = mIconViews.get(i);
-                v.setImageLevel(mLevel);
+                v.setImageLevel(level);
                 v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
-                        mLevel));
+                        level));
             }
             N = mLabelViews.size();
             for (int i=0; i<N; i++) {
                 TextView v = mLabelViews.get(i);
-                if (mBatteryStyle == BATTERY_STYLE_PERCENT) {
-                    v.setText(mContext.getString(BATTERY_TEXT_STYLE_NORMAL,
-                            mLevel));
-                } else {
-                    v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
-                            mLevel));
-                }
+                v.setText(mContext.getString(BATTERY_TEXT_STYLE_MIN,
+                        level));
             }
 
             for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-                cb.onBatteryLevelChanged(mLevel, mBatteryPlugged);
+                cb.onBatteryLevelChanged(level, mBatteryPlugged);
             }
             updateBattery();
         }
@@ -162,29 +149,16 @@ public class BatteryController extends BroadcastReceiver {
         int mIcon = View.GONE;
         int mText = View.GONE;
         int mIconStyle = BATTERY_ICON_STYLE_NORMAL;
-        int mTextStyle = BATTERY_TEXT_STYLE_NORMAL;
-        int pxTextPadding = 0;
-
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(metrics);
-        float logicalDensity = metrics.density;
 
         if (mBatteryStyle == BATTERY_STYLE_NORMAL) {
             mIcon = (View.VISIBLE);
             mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE
                     : BATTERY_ICON_STYLE_NORMAL;
-        } else if (mBatteryStyle == BATTERY_STYLE_ICON_PERCENT) {
-            pxTextPadding = 0;
+        } else if (mBatteryStyle == BATTERY_STYLE_PERCENT) {
             mIcon = (View.VISIBLE);
             mText = (View.VISIBLE);
             mIconStyle = mBatteryPlugged ? BATTERY_ICON_STYLE_CHARGE_MIN
                     : BATTERY_ICON_STYLE_NORMAL_MIN;
-            mTextStyle = BATTERY_TEXT_STYLE_MIN;
-        } else if (mBatteryStyle == BATTERY_STYLE_PERCENT) {
-            pxTextPadding = (int) (4 * logicalDensity + 0.5);
-            mText = (View.VISIBLE);
-            mTextStyle = BATTERY_TEXT_STYLE_NORMAL;
         }
 
         int N = mIconViews.size();
@@ -197,12 +171,6 @@ public class BatteryController extends BroadcastReceiver {
         for (int i=0; i<N; i++) {
             TextView v = mLabelViews.get(i);
             v.setVisibility(mText);
-            v.setText(mContext.getString(mTextStyle,
-                    mLevel));
-            v.setPadding(v.getPaddingLeft(),v.getPaddingTop(),pxTextPadding,v.getPaddingBottom());
-            if (mTextColor != -1) {
-                v.setTextColor(mTextColor);
-            }
         }
     }
 
@@ -211,10 +179,6 @@ public class BatteryController extends BroadcastReceiver {
 
         mBatteryStyle = (Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_BATTERY, 0));
-
-        mTextColor = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_BATTERY_TEXT_COLOR, -1);
-
         updateBattery();
     }
 }
