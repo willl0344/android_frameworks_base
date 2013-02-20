@@ -1412,7 +1412,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 	    mBackKillTimeout = Settings.System.getInt(resolver,
                     Settings.System.KILL_APP_LONGPRESS_TIMEOUT, 1500);
 
-           boolean keyRebindingEnabled = Settings.System.getInt(resolver,
+            mHasNavigationBar = !mHasSystemNavBar;
+
+            getDimensions();
+
+            boolean keyRebindingEnabled = Settings.System.getInt(resolver,
                     Settings.System.HARDWARE_KEY_REBINDING, 0) == 1;
 
             if (!keyRebindingEnabled) {
