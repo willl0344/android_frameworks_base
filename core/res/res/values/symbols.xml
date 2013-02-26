@@ -1936,4 +1936,6 @@
 
   <!-- Reboot confirmation string -->
   <java-symbol type="string" name="reboot_confirm" />
+
+  <java-symbol type="bool" name="config_hasHardwareKeys" />
 </resources>
