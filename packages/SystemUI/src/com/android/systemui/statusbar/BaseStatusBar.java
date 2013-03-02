@@ -58,7 +58,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -140,8 +139,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected WindowManager mWindowManager;
     protected IWindowManager mWindowManagerService;
     protected Display mDisplay;
-
-    private static boolean mNavBarFirstBootFlag = true;
 
     private boolean mDeviceProvisioned = false;
 
@@ -232,23 +229,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 Settings.System.STATUS_BAR_NOTIF_COUNT, 0) == 1;
 
         mStatusBarContainer = new FrameLayout(mContext);
-
-	try {
-        mNavBarFirstBootFlag = !mWindowManagerService.hasNavigationBar();
-        } catch (RemoteException e) {
-	// do nothing
-        }
-
-        boolean showNavBar = mContext.getResources().getBoolean(
-                    com.android.internal.R.bool.config_showNavigationBar);
-            // Allow a system property to override this. Used by the emulator.
-            // See also hasNavigationBar().
-            String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
-            if (! "".equals(navBarOverride)) {
-                if      (navBarOverride.equals("1")) showNavBar = false;
-
-                else if (navBarOverride.equals("0")) showNavBar = true;
-            }
 
         // Connect in to the status bar manager service
         StatusBarIconList iconList = new StatusBarIconList();
@@ -711,13 +691,13 @@ public abstract class BaseStatusBar extends SystemUI implements
                   break;
              case MSG_OPEN_SEARCH_PANEL:
                  if (DEBUG) Slog.d(TAG, "opening search panel");
-                 if (mSearchPanelView != null) {
+                 if (mSearchPanelView != null && mSearchPanelView.isAssistantAvailable()) {
                      mSearchPanelView.show(true, true);
                  }
                  break;
              case MSG_CLOSE_SEARCH_PANEL:
                  if (DEBUG) Slog.d(TAG, "closing search panel");
-                 if (mSearchPanelView != null) {
+                 if (mSearchPanelView != null && mSearchPanelView.isShowing()) {
                      mSearchPanelView.show(false, true);
                  }
                  break;
@@ -1213,24 +1193,16 @@ public abstract class BaseStatusBar extends SystemUI implements
         void observe(Context context) {
             ContentResolver resolver = context.getContentResolver();
 
-//	resolver.registerContentObserver(Settings.System.getUriFor(
-//                    Settings.System.HIGH_END_GFX_ENABLED), false, this,
-//                    UserHandle.USER_ALL);
-        resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NAVIGATION_BAR_SHOW), false, this);
+	resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HIGH_END_GFX_ENABLED), false, this,
+                    UserHandle.USER_ALL);
         }
 
         @Override
         public void onChange(boolean selfChange, Uri uri) {
-//            if (uri.equals(Settings.System.getUriFor(Settings.System.HIGH_END_GFX_ENABLED))) {
-//            	android.os.Process.killProcess(android.os.Process.myPid());
-//	    }
-            if (uri.equals(Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_SHOW))) {
-		if (mNavBarFirstBootFlag) {
-            		android.os.Process.killProcess(android.os.Process.myPid());
-		}
+            if (uri.equals(Settings.System.getUriFor(Settings.System.HIGH_END_GFX_ENABLED))) {
+            	android.os.Process.killProcess(android.os.Process.myPid());
 	    }
-
         }
     }
 }
