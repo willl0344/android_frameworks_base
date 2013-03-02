@@ -668,8 +668,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAVIGATION_BAR_SHOW), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-	    	    Settings.System.NAVIGATION_BAR_CAN_MOVE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
         Settings.System.NAVIGATION_BAR_HEIGHT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
         Settings.System.NAVIGATION_BAR_HEIGHT_LANDSCAPE), false, this);
@@ -1320,12 +1318,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (shortSizeDp < 600) {
             // 0-599dp: "phone" UI with a separate status & navigation bar
             mHasSystemNavBar = false;
-            if (Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.NAVIGATION_BAR_CAN_MOVE, 1) == 1) {
-                mNavigationBarCanMove = true;
-            } else {
-                mNavigationBarCanMove = false;
-            }
+            mNavigationBarCanMove = true;
 	    Settings.System.putInt(mContext.getContentResolver(),
                     Settings.System.TABLET_UI, 0);
         } else if (shortSizeDp < 720) {
@@ -1513,9 +1506,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.VOLBTN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) == 1); 
 	    mBackKillTimeout = Settings.System.getInt(resolver,
                     Settings.System.KILL_APP_LONGPRESS_TIMEOUT, 1500);
-
-                mNavigationBarCanMove = (Settings.System.getInt(resolver,
-                        Settings.System.NAVIGATION_BAR_CAN_MOVE, 1) == 1);
 
            boolean keyRebindingEnabled = Settings.System.getInt(resolver,
                     Settings.System.HARDWARE_KEY_REBINDING, 0) == 1;
