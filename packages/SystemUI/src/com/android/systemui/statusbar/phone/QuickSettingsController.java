@@ -73,6 +73,7 @@ public class QuickSettingsController {
     public static final String TILE_WIFIAP = "toggleWifiAp";
     public static final String TILE_SCREENTIMEOUT = "toggleScreenTimeout";
     public static final String TILE_MOBILEDATA = "toggleMobileData";
+    public static final String TILE_LTE = "toggleLte";
     public static final String TILE_LOCKSCREEN = "toggleLockScreen";
     public static final String TILE_NETWORKMODE = "toggleNetworkMode";
     public static final String TILE_AUTOROTATE = "toggleAutoRotate";
@@ -80,7 +81,6 @@ public class QuickSettingsController {
     public static final String TILE_TORCH = "toggleFlashlight";  // Keep old string for compatibility
     public static final String TILE_FAVCONTACT = "toggleFavoriteContact"; 
     public static final String TILE_SLEEP = "toggleSleepMode";
-    public static final String TILE_LTE = "toggleLte";
     public static final String TILE_WIMAX = "toggleWimax";
     public static final String TILE_PROFILE = "toggleProfile";
     public static final String TILE_NFC = "toggleNfc";
@@ -107,6 +107,7 @@ public class QuickSettingsController {
         TILES_CLASSES.put(TILE_GPS, "com.android.systemui.quicksettings.GPSTile");
         TILES_CLASSES.put(TILE_IME, "com.android.systemui.quicksettings.InputMethodTile");
         TILES_CLASSES.put(TILE_LOCKSCREEN, "com.android.systemui.quicksettings.ToggleLockscreenTile");
+	TILES_CLASSES.put(TILE_LTE, "com.android.systemui.quicksettings.LteTile"); 
         TILES_CLASSES.put(TILE_MOBILENETWORK, "com.android.systemui.quicksettings.MobileNetworkTile");
         TILES_CLASSES.put(TILE_NETWORKMODE, "com.android.systemui.quicksettings.MobileNetworkTypeTile");
         TILES_CLASSES.put(TILE_NFC, "com.android.systemui.quicksettings.NfcTile");
