@@ -68,6 +68,7 @@ public class QuickSettingsController {
     public static final String TILE_GPS = "toggleGPS";
     public static final String TILE_BLUETOOTH = "toggleBluetooth";
     public static final String TILE_BRIGHTNESS = "toggleBrightness";
+    public static final String TILE_EXPANDED_DESKTOP = "toggleExpandedDesktop";
     public static final String TILE_RINGER = "toggleSound";
     public static final String TILE_SYNC = "toggleSync";
     public static final String TILE_WIFIAP = "toggleWifiAp";
@@ -102,6 +103,7 @@ public class QuickSettingsController {
         TILES_CLASSES.put(TILE_BRIGHTNESS, "com.android.systemui.quicksettings.BrightnessTile");
         TILES_CLASSES.put(TILE_BUGREPORT, "com.android.systemui.quicksettings.BugReportTile");
         TILES_CLASSES.put(TILE_DAYDREAM, "com.android.systemui.quicksettings.DayDreamTile");
+        TILES_CLASSES.put(TILE_EXPANDED_DESKTOP, "com.android.systemui.quicksettings.ExpandedDesktopTile");
         TILES_CLASSES.put(TILE_FAVCONTACT, "com.android.systemui.quicksettings.FavoriteContactTile");
         TILES_CLASSES.put(TILE_FCHARGE, "com.android.systemui.quicksettings.FChargeTile");
         TILES_CLASSES.put(TILE_GPS, "com.android.systemui.quicksettings.GPSTile");
