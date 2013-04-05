@@ -61,6 +61,10 @@ public class QuickSettingsController {
      * com.android.settings.cyanogenmod.QuickSettingsUtil IN THE
      * Settings PACKAGE.
      */
+    public static final String TILE_MOBILENETWORK = "toggleMobileNetwork";
+    public static final String TILE_IME = "toggleIME";
+    public static final String TILE_ALARM = "toggleAlarm";
+    public static final String TILE_BUGREPORT = "toggleBugreport";
     public static final String TILE_USER = "toggleUser";
     public static final String TILE_BATTERY = "toggleBattery";
     public static final String TILE_SETTINGS = "toggleSettings";
@@ -83,6 +87,7 @@ public class QuickSettingsController {
     public static final String TILE_FAVCONTACT = "toggleFavoriteContact"; 
     public static final String TILE_SLEEP = "toggleSleepMode";
     public static final String TILE_WIMAX = "toggleWimax";
+    public static final String TILE_WIFIDISPLAY = "toggleWifiDisplay";
     public static final String TILE_PROFILE = "toggleProfile";
     public static final String TILE_NFC = "toggleNfc";
     public static final String TILE_USBTETHER = "toggleUsbTether";
