@@ -247,7 +247,7 @@ public class QuickSettingsController {
 	Log.e("\r\n\r\n"+TAG, "All tiles sucessfully created");
     }
 
-    private void setupQuickSettings() {
+    public void setupQuickSettings() {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         // Clear out old receiver
         if (mReceiver != null) {
@@ -355,12 +355,5 @@ public class QuickSettingsController {
         if (IMETile != null) {
             IMETile.toggleVisibility(visible);
         }
-    }
-
-    public void updateResources() {
-        mContainerView.updateResources();
-        mContainerView.removeAllViews();
-        setupQuickSettings();
-        mContainerView.requestLayout(); 
     }
 }
