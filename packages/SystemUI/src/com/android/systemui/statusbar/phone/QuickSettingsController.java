@@ -68,7 +68,6 @@ public class QuickSettingsController {
     public static final String TILE_USER = "toggleUser";
     public static final String TILE_BATTERY = "toggleBattery";
     public static final String TILE_SETTINGS = "toggleSettings";
-    public static final String TILE_MOBILEDATA = "toggleMobileData";
     public static final String TILE_WIFI = "toggleWifi";
     public static final String TILE_GPS = "toggleGPS";
     public static final String TILE_BLUETOOTH = "toggleBluetooth";
