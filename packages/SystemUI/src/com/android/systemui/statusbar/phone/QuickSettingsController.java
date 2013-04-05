@@ -206,7 +206,7 @@ public class QuickSettingsController {
                        null, getClass().getClassLoader());
                Class tileClass = classLoader.loadClass(TILES_CLASSES.get(tile));
                Method getInstance = tileClass.getMethod("getInstance", paramsTypes);
-               Object[] args = {mContext, inflater,  (QuickSettingsContainerView) mContainerView, this, mHandler, instanceID}; 
+               Object[] args = {mContext, inflater,  mContainerView, this, mHandler, instanceID};  
                qs = (QuickSettingsTile) getInstance.invoke(null, args);
            }
            catch(Exception e){
@@ -358,12 +358,9 @@ public class QuickSettingsController {
     }
 
     public void updateResources() {
-        /*
-         * this method is supposed to redraw all the tiles if needed
-         * for future need. Commented out for now.
-         * mContainerView.removeAllViews();
-         * setupQuickSettings();
-         * mContainerView.requestLayout();
-         */
+        mContainerView.updateResources();
+        mContainerView.removeAllViews();
+        setupQuickSettings();
+        mContainerView.requestLayout(); 
     }
 }
