@@ -93,3 +93,4 @@ public class ExpandedDesktopTile extends QuickSettingsTile {
         updateTile();
     }
 }
+

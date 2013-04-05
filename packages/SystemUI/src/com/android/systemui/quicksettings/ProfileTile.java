@@ -118,3 +118,4 @@ public class ProfileTile extends QuickSettingsTile {
     }
 
 }
+

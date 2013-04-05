@@ -72,3 +72,4 @@ public class ContactPickerActivity extends Activity {
         finish();
     }
 }
+
