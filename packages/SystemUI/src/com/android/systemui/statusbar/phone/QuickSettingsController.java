@@ -95,7 +95,6 @@ public class QuickSettingsController {
     public static final String TILE_DAYDREAM = "toggleDaydream";
     public static final String TILE_QUIETHOURS = "toggleQuietHours";
     public static final String TILE_REBOOT = "toggleReboot";
-    public static final String TILE_FCHARGE = "toggleFCharge";
 
     // Keep sorted according to titleResId's string value
     public static final LinkedHashMap<String, String> TILES_CLASSES = new LinkedHashMap<String, String>();
@@ -110,7 +109,6 @@ public class QuickSettingsController {
         TILES_CLASSES.put(TILE_DAYDREAM, "com.android.systemui.quicksettings.DayDreamTile");
         TILES_CLASSES.put(TILE_EXPANDED_DESKTOP, "com.android.systemui.quicksettings.ExpandedDesktopTile");
         TILES_CLASSES.put(TILE_FAVCONTACT, "com.android.systemui.quicksettings.FavoriteContactTile");
-        TILES_CLASSES.put(TILE_FCHARGE, "com.android.systemui.quicksettings.FChargeTile");
         TILES_CLASSES.put(TILE_GPS, "com.android.systemui.quicksettings.GPSTile");
         TILES_CLASSES.put(TILE_IME, "com.android.systemui.quicksettings.InputMethodTile");
         TILES_CLASSES.put(TILE_LOCKSCREEN, "com.android.systemui.quicksettings.ToggleLockscreenTile");
