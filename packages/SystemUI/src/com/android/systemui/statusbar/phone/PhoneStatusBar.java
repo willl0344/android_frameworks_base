@@ -237,7 +237,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     View mNotificationPanelHeader;
     View mDateTimeView;
     View mClearButton;
-    ImageView mSettingsButton, mNotificationButton;
+    ImageView mSettingsButton, mQuickSettingsButton, mNotificationButton;
 
     // carrier/wifi label
     private TextView mCarrierLabel;
@@ -391,6 +391,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
 	    resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.APP_SIDEBAR_POSITION), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NOTIFICATION_SETTINGS_BUTTON), false, this);
             update();
         }
 
@@ -410,6 +412,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0, UserHandle.USER_CURRENT) != 0;
             mNotificationShortcutsHideCarrier = Settings.System.getIntForUser(resolver,
                     Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0, UserHandle.USER_CURRENT) != 0;
+            boolean notificationSettingsBtn = Settings.System.getInt(
+                    resolver, Settings.System.NOTIFICATION_SETTINGS_BUTTON, 0) == 1;
+            mSettingsButton.setVisibility(notificationSettingsBtn ? View.VISIBLE : View.GONE);
             if (mCarrierLabel != null) {
                 toggleCarrierAndWifiLabelVisibility();
             }
@@ -439,8 +444,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             if (MULTIUSER_DEBUG) Slog.d(TAG, String.format("User setup changed: " +
                     "selfChange=%s userSetup=%s mUserSetup=%s",
                     selfChange, userSetup, mUserSetup));
-            if (mSettingsButton != null && mHasFlipSettings) {
-                mSettingsButton.setVisibility(userSetup ? View.VISIBLE : View.INVISIBLE);
+            if (mQuickSettingsButton != null && mHasFlipSettings) {
+                mQuickSettingsButton.setVisibility(userSetup ? View.VISIBLE : View.INVISIBLE);
             }
             if (mSettingsPanel != null) {
                 mSettingsPanel.setEnabled(userSetup);
@@ -629,13 +634,19 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
 
         mSettingsButton = (ImageView) mStatusBarWindow.findViewById(R.id.settings_button);
-        if (mSettingsButton != null) {
-            mSettingsButton.setOnClickListener(mSettingsButtonListener);
+        mSettingsButton.setOnClickListener(mSettingsButtonListener);
+
+        boolean notificationSettingsBtn = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NOTIFICATION_SETTINGS_BUTTON, 0) == 1;
+
+        mQuickSettingsButton = (ImageView) mStatusBarWindow.findViewById(R.id.quicksettings_button);
+        if (mQuickSettingsButton != null) {
+            mQuickSettingsButton.setOnClickListener(mQuickSettingsButtonListener);
             if (mHasSettingsPanel) {
                 if (mStatusBarView.hasFullWidthNotifications()) {
                     // the settings panel is hiding behind this button
-                    mSettingsButton.setImageResource(R.drawable.ic_notify_quicksettings);
-                    mSettingsButton.setVisibility(View.VISIBLE);
+                    mQuickSettingsButton.setImageResource(R.drawable.ic_notify_quicksettings);
+                    mQuickSettingsButton.setVisibility(View.VISIBLE);
                 } else {
                     // there is a settings panel, but it's on the other side of the (large) screen
                     final View buttonHolder = mStatusBarWindow.findViewById(
@@ -644,11 +655,14 @@ public class PhoneStatusBar extends BaseStatusBar {
                         buttonHolder.setVisibility(View.GONE);
                     }
                 }
+                mSettingsButton.setVisibility(notificationSettingsBtn ? View.VISIBLE : View.GONE);
             } else {
                 // no settings panel, go straight to settings
-                mSettingsButton.setVisibility(View.VISIBLE);
-                mSettingsButton.setImageResource(R.drawable.ic_notify_settings);
+                mQuickSettingsButton.setVisibility(View.VISIBLE);
+                mQuickSettingsButton.setImageResource(R.drawable.ic_notify_settings);
+                mSettingsButton.setVisibility(View.GONE);
             }
+
         }
         if (mHasFlipSettings) {
             mNotificationButton = (ImageView) mStatusBarWindow.findViewById(R.id.notification_button);
@@ -660,7 +674,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mScrollView = (ScrollView)mStatusBarWindow.findViewById(R.id.scroll);
         mScrollView.setVerticalScrollBarEnabled(false); // less drawing during pulldowns
-        mSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
+        mQuickSettingsButton.setOnLongClickListener(mSettingsLongClickListener);
         if (!mNotificationPanelIsFullScreenWidth) {
             mScrollView.setSystemUiVisibility(
                     View.STATUS_BAR_DISABLE_NOTIFICATION_TICKER |
@@ -1215,7 +1229,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     @Override
     public void removeNotification(IBinder key) {
-        if (mSettingsButton == null || mNotificationButton == null) {
+        if (mQuickSettingsButton == null || mNotificationButton == null) {
             // Tablet
             updateNotificationShortcutsVisibility(false, true);
             if (mNotificationShortcutsToggle) {
@@ -1285,8 +1299,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             }
         }
 
-        if (mSettingsButton != null) {
-            mSettingsButton.setEnabled(isDeviceProvisioned());
+        if (mQuickSettingsButton != null) {
+            mQuickSettingsButton.setEnabled(isDeviceProvisioned());
         }
     }
 
@@ -1806,7 +1820,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     final int FLIP_DURATION = (FLIP_DURATION_IN + FLIP_DURATION_OUT);
 
     Animator mScrollViewAnim, mFlipSettingsViewAnim, mNotificationButtonAnim,
-        mSettingsButtonAnim, mClearButtonAnim;
+        mQuickSettingsButtonAnim, mClearButtonAnim;
 
     @Override
     public void animateExpandNotificationsPanel() {
@@ -1831,7 +1845,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         mQSPanelIsOpen = false;
         if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
         if (mScrollViewAnim != null) mScrollViewAnim.cancel();
-        if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
+        if (mQuickSettingsButtonAnim != null) mQuickSettingsButtonAnim.cancel();
         if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
         if (mClearButtonAnim != null) mClearButtonAnim.cancel();
 
@@ -1865,9 +1879,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                 ObjectAnimator.ofFloat(mNotificationButton, View.ALPHA, 0f)
                     .setDuration(FLIP_DURATION),
                 mNotificationButton, View.INVISIBLE));
-        mSettingsButton.setVisibility(View.VISIBLE);
-        mSettingsButtonAnim = start(
-            ObjectAnimator.ofFloat(mSettingsButton, View.ALPHA, 1f)
+        mQuickSettingsButton.setVisibility(View.VISIBLE);
+        mQuickSettingsButtonAnim = start(
+            ObjectAnimator.ofFloat(mQuickSettingsButton, View.ALPHA, 1f)
                 .setDuration(FLIP_DURATION));
         mClearButton.setVisibility(View.VISIBLE);
         mClearButton.setAlpha(0f);
@@ -1918,7 +1932,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mFlipSettingsView.setScaleX(1f);
         mFlipSettingsView.setVisibility(View.VISIBLE);
-        mSettingsButton.setVisibility(View.GONE);
+        mQuickSettingsButton.setVisibility(View.GONE);
         mScrollView.setVisibility(View.GONE);
         mScrollView.setScaleX(0f);
         mPowerWidget.setVisibility(View.GONE);
@@ -1947,7 +1961,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     public void partialFlip(float progress) {
         if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
         if (mScrollViewAnim != null) mScrollViewAnim.cancel();
-        if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
+        if (mQuickSettingsButtonAnim != null) mQuickSettingsButtonAnim.cancel();
         if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
         if (mClearButtonAnim != null) mClearButtonAnim.cancel();
 
@@ -1955,8 +1969,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         if (progress < 0f) { // notifications side
             mFlipSettingsView.setScaleX(0f);
             mFlipSettingsView.setVisibility(View.GONE);
-            mSettingsButton.setVisibility(View.VISIBLE);
-            mSettingsButton.setAlpha(-progress);
+            mQuickSettingsButton.setVisibility(View.VISIBLE);
+            mQuickSettingsButton.setAlpha(-percent);
             mScrollView.setVisibility(View.VISIBLE);
             mScrollView.setScaleX(-progress);
             mPowerWidget.updateVisibility();
@@ -1964,7 +1978,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         } else { // settings side
             mFlipSettingsView.setScaleX(progress);
             mFlipSettingsView.setVisibility(View.VISIBLE);
-            mSettingsButton.setVisibility(View.GONE);
+            mQuickSettingsButton.setVisibility(View.GONE);
             mScrollView.setVisibility(View.GONE);
             mScrollView.setScaleX(0f);
             mPowerWidget.setVisibility(View.GONE);
@@ -1983,7 +1997,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             mQSPanelIsOpen = true;
             if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
             if (mScrollViewAnim != null) mScrollViewAnim.cancel();
-            if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
+            if (mQuickSettingsButtonAnim != null) mQuickSettingsButtonAnim.cancel();
             if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
             if (mClearButtonAnim != null) mClearButtonAnim.cancel();
 
@@ -2009,9 +2023,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                         )
                     .setDuration(FLIP_DURATION_OUT),
                 mScrollView, View.INVISIBLE));
-        mSettingsButtonAnim = start(
+        mQuickSettingsButtonAnim = start(
             setVisibilityWhenDone(
-                ObjectAnimator.ofFloat(mSettingsButton, View.ALPHA, 0f)
+                ObjectAnimator.ofFloat(mQuickSettingsButton, View.ALPHA, 0f)
                     .setDuration(FLIP_DURATION),
                     mScrollView, View.INVISIBLE));
         mPowerWidget.setVisibility(View.GONE);
@@ -2076,15 +2090,15 @@ public class PhoneStatusBar extends BaseStatusBar {
             // reset things to their proper state
             if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
             if (mScrollViewAnim != null) mScrollViewAnim.cancel();
-            if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
+            if (mQuickSettingsButtonAnim != null) mQuickSettingsButtonAnim.cancel();
             if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
             if (mClearButtonAnim != null) mClearButtonAnim.cancel();
 
             mScrollView.setScaleX(1f);
             mScrollView.setVisibility(View.VISIBLE);
             mPowerWidget.updateVisibility();
-            mSettingsButton.setAlpha(1f);
-            mSettingsButton.setVisibility(View.VISIBLE);
+            mQuickSettingsButton.setAlpha(1f);
+            mQuickSettingsButton.setVisibility(View.VISIBLE);
             mNotificationPanel.setVisibility(View.GONE);
             mFlipSettingsView.setVisibility(View.GONE);
             mNotificationButton.setVisibility(View.GONE);
@@ -2776,7 +2790,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         animateCollapsePanels();
     }
 
-    private final View.OnClickListener mSettingsButtonListener = new View.OnClickListener() {
+    private final View.OnClickListener mQuickSettingsButtonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mHasSettingsPanel) {
@@ -2788,66 +2802,57 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     };
 
+    private final View.OnClickListener mSettingsButtonListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivityDismissingKeyguard(
+                    new Intent(android.provider.Settings.ACTION_SETTINGS), true);
+        }
+    };
+
     private View.OnLongClickListener mSettingsLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            int mQSPWToggle = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.QS_LONGPRESS_PW_TOGGLE, 0);
-            if (mQSPWToggle == 1) {
-                if (mPowerWidget.getVisibility() == View.GONE) {
-                    int height = mPowerWidget.getHeight();
-                    Animation anim = AnimationUtils.makeInAnimation(mContext, true);
-                    anim.setDuration(500);
-                    anim.setAnimationListener(new AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            mPowerWidget.setVisibility(View.VISIBLE);
-                            Settings.System.putInt(mContext.getContentResolver(),
-                                    Settings.System.EXPANDED_VIEW_WIDGET, 1);
-                        }
-                        //stupid android wont compile empty methods so I have to override them to work.... better make them public too!
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                        }
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
-                    mPowerWidget.startAnimation(anim);
-                } else {
-                    int height = mPowerWidget.getHeight();
-                    Animation anim = AnimationUtils.makeOutAnimation(mContext, false);
-                    anim.setDuration(500);
-                    anim.setAnimationListener(new AnimationListener() {
-                         @Override
-                         public void onAnimationEnd(Animation animation) {
-                             mPowerWidget.setVisibility(View.GONE);
-                             Settings.System.putInt(mContext.getContentResolver(),
-                                    Settings.System.EXPANDED_VIEW_WIDGET, 0);
-                         }
-                         //stupid android wont compile empty methods so I have to override them to work....
-                         @Override
-                         public void onAnimationStart(Animation animation) {
-                         }
-                         @Override
-                         public void onAnimationRepeat(Animation animation) {
-                         }
-                    });
-                    mPowerWidget.startAnimation(anim);
-                }
+            if (mPowerWidget.getVisibility() == View.GONE) {
+                int height = mPowerWidget.getHeight();
+                Animation anim = AnimationUtils.makeInAnimation(mContext, true);
+                anim.setDuration(500);
+                anim.setAnimationListener(new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                        mPowerWidget.setVisibility(View.VISIBLE);
+                        Settings.System.putInt(mContext.getContentResolver(),
+                                Settings.System.EXPANDED_VIEW_WIDGET, 1);
+                    }
+                    //stupid android wont compile empty methods so I have to override them to work.... better make them public too!
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                    }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+                });
+                mPowerWidget.startAnimation(anim);
             } else {
-                try {
-                    ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-                } catch (RemoteException e) {
-                }
-                try {
-                    animateCollapsePanels();
-                    Intent i = new Intent("android.settings.SETTINGS");
-                    i.addCategory(Intent.CATEGORY_DEFAULT);
-                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    v.getContext().startActivity(i);
-                } catch (Exception e) {
-                }
+                int height = mPowerWidget.getHeight();
+                Animation anim = AnimationUtils.makeOutAnimation(mContext, false);
+                anim.setDuration(500);
+                anim.setAnimationListener(new AnimationListener() {
+                     @Override
+                     public void onAnimationEnd(Animation animation) {
+                         mPowerWidget.setVisibility(View.GONE);
+                         Settings.System.putInt(mContext.getContentResolver(),
+                                Settings.System.EXPANDED_VIEW_WIDGET, 0);
+                     }
+                     //stupid android wont compile empty methods so I have to override them to work....
+                     @Override
+                     public void onAnimationStart(Animation animation) {
+                     }
+                     @Override
+                     public void onAnimationRepeat(Animation animation) {
+                     }
+                });
+                mPowerWidget.startAnimation(anim);
             }
             return true;
         }
