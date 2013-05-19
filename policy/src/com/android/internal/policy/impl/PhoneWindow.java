@@ -2470,10 +2470,6 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                 case 8:
                     mSbm.toggleRecentApps();
                     break;
-                case 10:
-                    Intent switchIntent = new Intent("com.android.systemui.APP_SWITCH");
-                    mContext.sendBroadcast(switchIntent);
-                    break;
             }
         }
 
