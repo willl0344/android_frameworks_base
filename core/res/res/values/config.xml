@@ -168,7 +168,7 @@
 
     <!-- The duration (in milliseconds) that the radio will scan for a signal
          when there's no network connection. If the scan doesn't timeout, use zero -->
-    <integer name="config_radioScanningTimeout">0</integer>
+    <integer name="config_radioScanningTimeout">30000</integer>
 
     <!-- XXXXX NOTE THE FOLLOWING RESOURCES USE THE WRONG NAMING CONVENTION.
          Please don't copy them, copy anything else. -->
